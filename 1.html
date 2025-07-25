@@ -1,0 +1,344 @@
+
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Bhakti Tus Sinnar - Bill Management System</title>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/jspdf/2.5.1/jspdf.umd.min.js"></script>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/html2canvas/1.4.1/html2canvas.min.js"></script>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/moment.js/2.29.4/moment.min.js"></script>
+    <link rel="stylesheet" href="1.css">
+    <link rel="stylesheet" href="2.css">
+</head>
+<body>
+    <!-- Login Section -->
+    <div id="login-section" class="container">
+        <div class="login-form">
+            <h2>Bhakti Tus Sinnar</h2>
+            <p>Driven by KENDRE DADA</p>
+            <div class="form-group">
+                <label for="username">Username</label>
+                <input type="text" id="username" placeholder="Enter your username" />
+            </div>
+            <div class="form-group">
+                <label for="password">Password</label>
+                <input type="password" id="password" placeholder="Enter your password" />
+            </div>
+            <button id="login-btn" type="button">Login</button>
+        </div>
+    </div>
+
+    <!-- Main Application -->
+    <div id="app-section" class="hidden">
+        <div class="header">
+            <h1>Bhakti Tus Sinnar</h1>
+            <p>Driven by KENDRE DADA - Professional Bill Management System</p>
+        </div>
+
+        <div class="container">
+            <div class="tabs">
+                <div class="tab active" data-tab="new-bill">New Bill</div>
+                <div class="tab" data-tab="bill-history">Bill History</div>
+                <div class="tab" data-tab="validate-bill">Validate Bill</div>
+                <div class="tab" data-tab="settings">Settings</div>
+                <button id="logout-btn" type="button">Logout</button>
+            </div>
+
+            <!-- New Bill Tab -->
+            <div id="new-bill" class="tab-content active">
+                <div class="content">
+                    <div class="sidebar">
+                        <h2>Create New Bill</h2>
+                        
+                        <div class="form-group">
+                            <label>Calculation Method</label>
+                            <div class="toggle-container">
+                                <button type="button" id="bag-calc-btn" class="toggle-btn active">
+                                    Bags Calculation
+                                </button>
+                                <button type="button" id="vehicle-calc-btn" class="toggle-btn">
+                                    Vehicle Weight
+                                </button>
+                            </div>
+                        </div>
+
+                        <div class="form-group">
+                            <label for="customer-name">Customer Name</label>
+                            <input type="text" id="customer-name" placeholder="Enter customer name" />
+                        </div>
+
+                        <div class="form-group">
+                            <label for="customer-address">Customer Address</label>
+                            <input type="text" id="customer-address" placeholder="Enter customer address" />
+                        </div>
+
+                        <div class="form-group">
+                            <label for="customer-phone">Customer Phone</label>
+                            <input type="text" id="customer-phone" placeholder="Enter customer phone" />
+                        </div>
+
+                        <!-- Bags Section -->
+                        <div id="bag-calculation-section" class="calculation-section">
+                            <div class="form-group">
+                                <label for="bag-quantity">Quantity of Bags (Goni)</label>
+                                <input type="number" id="bag-quantity" placeholder="Enter quantity" min="1" />
+                            </div>
+                            <div class="form-group">
+                                <label for="avg-weight">Average Weight per Bag (kg)</label>
+                                <input type="number" id="avg-weight" placeholder="Enter average weight" step="0.01" min="0.01" />
+                            </div>
+                            <div class="form-group">
+                                <label for="price-per-kg">Price per Kg (₹)</label>
+                                <input type="number" id="price-per-kg" placeholder="Enter price per kg" step="0.01" min="0.01" value="7.7" />
+                            </div>
+                            <div class="form-group checkbox-group">
+                                <input type="checkbox" id="include-empty-bags" />
+                                <label for="include-empty-bags">Include Empty Bags</label>
+                            </div>
+                            <div id="empty-bags-row" class="form-group hidden">
+                                <label for="empty-bag-quantity">Empty Bags Quantity</label>
+                                <input type="number" id="empty-bag-quantity" placeholder="Enter quantity" min="0" value="0" disabled />
+                            </div>
+                        </div>
+
+                        <!-- Vehicle Section -->
+                        <div id="vehicle-calculation-section" class="calculation-section hidden">
+                            <div class="form-group">
+                                <label for="vehicle-loaded-weight">Loaded Vehicle Weight (kg)</label>
+                                <input type="number" id="vehicle-loaded-weight" placeholder="Enter loaded weight" step="0.01" min="0" />
+                            </div>
+                            <div class="form-group">
+                                <label for="vehicle-empty-weight">Empty Vehicle Weight (kg)</label>
+                                <input type="number" id="vehicle-empty-weight" placeholder="Enter empty weight" step="0.01" min="0" />
+                            </div>
+                            <div class="form-group">
+                                <label for="vehicle-price-per-kg">Price per Kg (₹)</label>
+                                <input type="number" id="vehicle-price-per-kg" placeholder="Enter price per kg" step="0.01" min="0.01" value="7.7" />
+                            </div>
+                            <div class="form-group checkbox-group">
+                                <input type="checkbox" id="vehicle-include-empty-bags" />
+                                <label for="vehicle-include-empty-bags">Include Empty Bags</label>
+                            </div>
+                            <div id="vehicle-empty-bags-row" class="form-group hidden">
+                                <label for="vehicle-empty-bag-quantity">Empty Bags Quantity</label>
+                                <input type="number" id="vehicle-empty-bag-quantity" placeholder="Enter quantity" min="0" value="0" disabled />
+                            </div>
+                        </div>
+
+                        <div id="bill-actions">
+                            <button id="calculate-btn" type="button">
+                                Calculate & Preview Bill
+                            </button>
+                            
+                            <button id="reset-bill-btn" type="button">
+                                <svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" style="margin-right: 8px">
+                                    <path d="M3 2v6h6"></path>
+                                    <path d="M3 13a9 9 0 1 0 3-7.7L3 8"></path>
+                                </svg>
+                                Reset Form
+                            </button>
+                        </div>
+                    </div>
+                </div>
+            </div>
+
+            <div id="bill-popup-overlay" class="popup-overlay">
+                    <div class="popup-content">
+                        <div class="popup-header">
+                            <h3>Bill Preview</h3>
+                            <div class="popup-actions">
+                                <button id="popup-generate-pdf-btn" class="download-btn">
+                                    <svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" style="margin-right: 8px">
+                                        <path d="M21 15v4a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2v-4"></path>
+                                        <polyline points="7 10 12 15 17 10"></polyline>
+                                        <line x1="12" y1="15" x2="12" y2="3"></line>
+                                    </svg>
+                                    Download PDF
+                                </button>
+                                <button id="popup-save-bill-btn" class="save-btn">
+                                    <svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" style="margin-right: 8px">
+                                        <path d="M19 21H5a2 2 0 0 1-2-2V5a2 2 0 0 1 2-2h11l5 5v11a2 2 0 0 1-2 2z"></path>
+                                        <polyline points="17 21 17 13 7 13 7 21"></polyline>
+                                        <polyline points="7 3 7 8 15 8"></polyline>
+                                    </svg>
+                                    Save Bill
+                                </button>
+                                <button class="popup-close" id="close-bill-popup">&times;</button>
+                            </div>
+                        </div>
+                        <div style="padding: 20px">
+                            <div id="bill-preview" class="professional-bill">
+                                <div class="watermark">BHAKTI TUS</div>
+                                <div class="qr-code" id="bill-qr-code">QR Code</div>
+
+                                <div class="bill-header-pro">
+                                    <div class="logo-area">
+                                        <div>
+                                            <div class="bill-title">Bhakti Tus Sinnar</div>
+                                            <div class="bill-subtitle">Driven by KENDRE DADA</div>
+                                        </div>
+                                    </div>
+                                </div>
+
+                                <div class="bill-details">
+                                    <div class="bill-to">
+                                        <h3>BILL TO</h3>
+                                        <div id="bill-customer-name" style="font-weight: 600; font-size: 18px">-</div>
+                                        <div id="bill-customer-address">-</div>
+                                        <div>Phone: <span id="bill-customer-phone">-</span></div>
+                                    </div>
+                                    <div class="invoice-info">
+                                        <h3>INVOICE DETAILS</h3>
+                                        <div><strong>Invoice No:</strong> <span id="bill-number">-</span></div>
+                                        <div><strong>Date:</strong> <span id="bill-date">-</span></div>
+                                        <div><strong>Time:</strong> <span id="bill-time">-</span></div>
+                                    </div>
+                                </div>
+
+                                <table class="bill-items">
+                                    <thead>
+                                        <tr>
+                                            <th >DESCRIPTION</th>
+                                            <th id="quantity-header"></th>
+                                            <th id="avg-weight-header">AVG. WEIGHT</th>
+                                            <th id="total-weight-header">TOTAL WEIGHT</th>
+                                            <th>RATE</th>
+                                            <th>AMOUNT</th>
+                                        </tr>
+                                    </thead>
+                                    <tbody>
+                                        <tr>
+                                            <td id="bill-desc-header"></td>
+                                            <td id="bill-quantity">-</td>
+                                            <td id="bill-avg-weight">-</td>
+                                            <td id="bill-total-weight">-</td>
+                                            <td>₹<span id="bill-rate">-</span></td>
+                                            <td>₹<span id="bill-amount">-</span></td>
+                                        </tr>
+                                        <tr id="bill-empty-bag-row" class="hidden">
+                                            <td>Empty Bags</td>
+                                            <td id="bill-empty-bag-quantity">-</td>
+                                            <td>-</td>
+                                            <td>-</td>
+                                            <td>₹<span id="bill-empty-bag-rate">-</span></td>
+                                            <td>₹<span id="bill-empty-bag-amount">-</span></td>
+                                        </tr>
+                                    </tbody>
+                                </table>
+
+                                <div class="bill-total-section">
+                                    <div class="bill-totals">
+                                        <div class="bill-total-row">
+                                            <div>Subtotal:</div>
+                                            <div>₹<span id="bill-subtotal">-</span></div>
+                                        </div>
+                                        <div class="bill-total-row grand-total">
+                                            <div>Total:</div>
+                                            <div>₹<span id="bill-total-amount">-</span></div>
+                                        </div>
+                                        <div class="amount-words">
+                                            Amount in words: <span id="amount-in-words">-</span>
+                                        </div>
+                                    </div>
+                                </div>
+
+                                <div class="bill-footer">
+                                    <div class="signature">
+                                        <div class="signature-line"></div>
+                                        <p>Customer's Signature</p>
+                                    </div>
+                                    <div class="signature">
+                                        <img class="signature-admin" src="signature.png" alt="">
+                                        <p>Authorized Signature</p>
+                                    </div>
+                                </div>
+
+                                <div class="bill-disclaimer">
+                                    This is a computer generated invoice and does not require a physical signature.
+                                    <br>
+                                    Thank you for your business!
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+
+            <!-- Bill History Tab -->
+            <div id="bill-history" class="tab-content">
+                <div class="sidebar">
+                    <h2>Bill History</h2>
+                    <div id="bill-list-hist" class="bill-list">
+                        <!-- Bill history will be populated here -->
+                    </div>
+                </div>
+            </div>
+
+            <!-- Validate Bill Tab -->
+            <div id="validate-bill" class="tab-content">
+                <div class="sidebar">
+                    <h2>Validate Bill</h2>
+                    <div class="search-box">
+                        <span class="search-icon">
+                            <svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+                                <circle cx="11" cy="11" r="8"></circle>
+                                <line x1="21" y1="21" x2="16.65" y2="16.65"></line>
+                            </svg>
+                        </span>
+                        <input type="text" id="search-bills" placeholder="Search by customer name or bill number..." />
+                    </div>
+                    <div id="bill-list" class="bill-list">
+                        <!-- Bill list will be populated here -->
+                    </div>
+                </div>
+            </div>
+
+            <!-- Settings Tab -->
+            <div id="settings" class="tab-content">
+                <div class="sidebar">
+                    <h2>Settings</h2>
+                    <div class="form-group">
+                        <label for="default-price">Default Price per Kg (₹)</label>
+                        <input type="number" id="default-price" value="7.7" step="0.01" min="0.01" />
+                    </div>
+                    <div class="form-group">
+                        <label for="empty-bag-price">Empty Bag Price (₹)</label>
+                        <input type="number" id="empty-bag-price" value="10" step="0.01" min="0.01" />
+                    </div>
+                    <div class="form-group">
+                        <label for="company-phone">Company Phone Number</label>
+                        <input type="text" id="company-phone" value="+91 9876543210" />
+                    </div>
+                    <div class="form-group">
+                        <label for="company-address">Company Address</label>
+                        <input type="text" id="company-address" value="Sinnar, Maharashtra" />
+                    </div>
+                    <div class="form-group">
+                        <label for="company-email">Company Email</label>
+                        <input type="email" id="company-email" value="info@bhaktitus.com" />
+                    </div>
+                    <div class="form-group">
+                        <label for="watermark-text">Bill Watermark Text</label>
+                        <input type="text" id="watermark-text" value="BHAKTI TUS" />
+                    </div>
+                    <button id="save-settings-btn" type="button">Save Settings</button>
+                    
+                    <hr style="margin: 30px 0; border: none; border-top: 2px solid var(--border-color);">
+                    
+                    <h3>Data Management</h3>
+                    <div class="data-management-buttons">
+                        <button id="export-data-btn" type="button">Export Data</button>
+                        <label for="import-data-file" class="file-upload-btn">Import Data</label>
+                        <input type="file" id="import-data-file" style="display: none" accept=".json" />
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <!-- Toast Container -->
+    <div id="toast-container"></div>
+
+    <script src="1.js"></script>
+    <script src="2.js"></script>
+</body>
+</html>
